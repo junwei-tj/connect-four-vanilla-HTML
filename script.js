@@ -7,9 +7,9 @@ const nextMoveButtons = Array.from(document.getElementsByClassName("next-move"))
 const playText = document.getElementById("play-text");
 const restartButton = document.getElementById("restart-button");
 
-const RED = "X";
-const YELLOW = "O";
-let currentPlayer = RED;
+const RED = "red";
+const YELLOW = "yellow";
+let currentPlayer = YELLOW; // technically RED starts first, but we assign YELLOW first since we need to call switchPlayer() at start of new game
 let lastMove;
 
 // initializes board to a 2D array of 6 rows by 7 columns
@@ -33,7 +33,7 @@ function columnChosen(e) {
     for (let row=ROWS-1; row>=0; row--) {
         if (!board[row][column]) {        
             board[row][column] = currentPlayer;
-            boxes[row*COLUMNS + column].innerText = currentPlayer;
+            boxes[row*COLUMNS + column].innerHTML = `<img src="images/${currentPlayer}.png" alt="red-token">`;
             lastMove = { row, column };
             let winner = getWinner();
             if (winner) {
@@ -42,12 +42,28 @@ function columnChosen(e) {
                     button.removeEventListener('click', columnChosen);
                 })
             } else {
-                currentPlayer = currentPlayer === RED ? YELLOW : RED;
-                playText.innerText = `${currentPlayer}'s Turn`
+                switchPlayer();
             }
             break;
         }
     }
+}
+
+function switchPlayer() {
+    if (currentPlayer === RED) {
+        currentPlayer = YELLOW;
+        nextMoveButtons.forEach(button => {
+            button.classList.remove("red-move");
+            button.classList.add("yellow-move");
+        })
+    } else {
+        currentPlayer = RED;
+        nextMoveButtons.forEach(button => {
+            button.classList.remove("yellow-move");
+            button.classList.add("red-move");
+        })
+    }
+    playText.innerText = `${currentPlayer}'s Turn`
 }
 
 // returns the winner if any. if the game is tied returns "tie". else null is returned.
@@ -106,6 +122,7 @@ function checkTie() {
 function restart() {
     playText.innerText = "Let's Play!";
     createBoard();
+    switchPlayer();
     boxes.forEach(box => {
         box.innerText = "";
     })
@@ -113,18 +130,6 @@ function restart() {
         button.addEventListener("click", columnChosen);
     })
 }
-
-// draw board
-boxes.forEach((box, index) => {
-    let style = "";
-    if (index % 7 !== 6) {
-        style += "border-right: 3px solid black;";
-    }
-    if (index < 35) {
-        style += "border-bottom: 3px solid black;";
-    }
-    box.style = style;
-});
 
 restartButton.addEventListener('click', restart);
 

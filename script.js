@@ -1,8 +1,8 @@
 const ROWS = 6;
 const COLUMNS = 7;
 
-const boxes = Array.from(document.getElementsByClassName("box"));
-let board;
+const boxes = Array.from(document.getElementsByClassName("box")); // boxes refer to the actual cells in the HTML
+let board; // board is a 2D array hidden from the HTML, that parallels the HTML boxes. it is used to handle game logic
 const nextMoveButtons = Array.from(document.getElementsByClassName("next-move"));
 const playText = document.getElementById("play-text");
 const restartButton = document.getElementById("restart-button");
@@ -24,20 +24,26 @@ function createBoard() {
     }
 }
 
-/* 
-"drops" the player's token into the board
-when the game ends all next move buttons are devoid of their event listeners
-*/
+// "drops" the player's token into the board
+// when the game ends all next move buttons are devoid of their event listeners
 function columnChosen(e) {
     let column = +e.target.id.match(/(\d+)/)[0];
     for (let row=ROWS-1; row>=0; row--) {
         if (!board[row][column]) {        
             board[row][column] = currentPlayer;
-            boxes[row*COLUMNS + column].innerHTML = `<img src="images/${currentPlayer}.png" alt="red-token">`;
             lastMove = { row, column };
+            
+            // create the token image inside the correct box
+            let translateVal = (row+1) * 100;
+            boxes[row*COLUMNS + column].innerHTML = `<img style="transform: translateY(-${translateVal}px)" src="images/${currentPlayer}.png" alt="red-token">`;
+            let token = boxes[row*COLUMNS + column].childNodes[0];
+            setTimeout(() => {
+                token.classList.add("fly-in");
+            }, 50); // the token's "transition" effect can only be triggered after a certain amount of time has passed since adding the initial style to the token
+
             let winner = getWinner();
             if (winner) {
-                playText.innerText = winner === 'tie' ? "The game has ended in a tie." : `${winner} has won!`;
+                playText.innerText = winner === 'tie' ? "Tie" : `${winner} has won!`;
                 nextMoveButtons.forEach(button => {
                     button.removeEventListener('click', columnChosen);
                 })

@@ -17,11 +17,12 @@ h1 {
 
 button {
     background-color:khaki;
-    border-color: khaki;
+    border: none;
     color: black;
     padding: 10px 20px;
     font-size: 18px;
     transition: 200ms;
+    border-radius: 10%;
 }
 
 button:hover {
@@ -65,6 +66,7 @@ button:hover {
     width: 706px;
     height: 106px;
     display: flex;
+    border: 3px solid transparent;
 }
 
 .next-move {
@@ -80,4 +82,9 @@ button:hover {
 
 .yellow-move:hover {
     content: url("images/yellow.png");
+}
+
+.fly-in {
+    transform: translateY(0px) !important;
+    transition: 0.5s;
 }

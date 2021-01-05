@@ -7,9 +7,8 @@
     <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-    <div class="container">
-        <button id="restart-button">Restart</button>
-        <h1 id="play-text">Let's Play!</h1>
+    <div id="game-container">
+        <h1 id="play-text">Click "New Game" to Start!</h1>
         <div id="next-move-row">
             <div class="next-move" id="column0"></div>
             <div class="next-move" id="column1"></div>
@@ -63,6 +62,29 @@
             <div class="box" id="40"></div>
             <div class="box" id="41"></div>
         </div>
+    </div>
+    <div id="settings-container">
+        <span><b>Opponent</b></span>
+        <div class="settings-options">
+            <input type="radio" id="human" name="player-type" value="human" checked>
+            <label for="human">Human</label><br>
+            <input type="radio" id="computer" name="player-type" value="computer">
+            <label for="computer">Computer</label>
+        </div>
+        <div id="difficulty-container">
+            <span><b>Difficulty Level</b></span>
+            <div class="settings-options">
+                <input type="radio" id="beginner" name="difficulty" value="beginner">
+                <label for="beginner">Beginner</label><br>
+                <input type="radio" id="easy" name="difficulty" value="easy" checked>
+                <label for="easy">Easy</label><br>
+                <input type="radio" id="medium" name="difficulty" value="medium">
+                <label for="medium">Medium</label><br>
+                <input type="radio" id="hard" name="difficulty" value="hard">
+                <label for="hard">Hard</label>
+            </div>
+        </div>
+        <button id="restart-button">New Game</button>
     </div>
     <script src="ai.js"></script>
     <script src="script.js"></script>

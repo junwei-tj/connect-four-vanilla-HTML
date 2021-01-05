@@ -6,11 +6,13 @@ let board; // board is a 2D array hidden from the HTML, that parallels the HTML 
 const nextMoveButtons = Array.from(document.getElementsByClassName("next-move"));
 const playText = document.getElementById("play-text");
 const restartButton = document.getElementById("restart-button");
+const opponentOptions = Array.from(document.getElementsByName("player-type"));
 
 const RED = "red";
 const YELLOW = "yellow";
-let currentPlayer = YELLOW; // technically RED starts first, but we assign YELLOW first since we need to call switchPlayer() at start of new game
-let lastMove;
+let currentPlayer;
+let opponent;
+let difficulty;
 
 // initializes board to a 2D array of 6 rows by 7 columns
 function createBoard() {
@@ -53,35 +55,40 @@ function makeMove(row, column) {
     if (winner) {
         playText.innerText = winner === 'tie' ? "Tie" : `${winner} has won!`;
         toggleNextMoveButtons();
+        restartButton.innerText = "New Game";
     } else {
         switchPlayer();
     }
 }
-// old ver for local multiplayer
-// function switchPlayer() {
-//     if (currentPlayer === RED) {
-//         currentPlayer = YELLOW;
-//         nextMoveButtons.forEach(button => {
-//             button.classList.remove("red-move");
-//             button.classList.add("yellow-move");
-//         })
-//     } else {
-//         currentPlayer = RED;
-//         nextMoveButtons.forEach(button => {
-//             button.classList.remove("yellow-move");
-//             button.classList.add("red-move");
-//         })
-//     }
-//     playText.innerText = `${currentPlayer}'s Turn`
-// }
+
 function switchPlayer() {
     currentPlayer = currentPlayer === RED ? YELLOW : RED;
-    playText.innerText = `${currentPlayer}'s Turn`;
-    if (currentPlayer === RED) {
-        toggleNextMoveButtons(true);
-    } else {
-        toggleNextMoveButtons(false);
-        setTimeout(aiMove, 500);
+    if (opponent === "human") {
+        playText.innerText = `${currentPlayer}'s Turn`;
+        if (currentPlayer === RED) {
+            nextMoveButtons.forEach(button => {
+                button.classList.remove("yellow-move");
+                button.classList.add("red-move");
+            })
+        } else {
+            nextMoveButtons.forEach(button => {
+                button.classList.remove("red-move");
+                button.classList.add("yellow-move");
+            })
+        }
+    } else if (opponent === "computer") {
+        nextMoveButtons.forEach(button => {
+            button.classList.remove("yellow-move");
+            button.classList.add("red-move");
+        })
+        if (currentPlayer === RED) {
+            playText.innerText = "Your Turn";
+            toggleNextMoveButtons(true);
+        } else {
+            playText.innerText = "Computer's Turn";
+            toggleNextMoveButtons(false);
+            aiMove();
+        }
     }
 }
 
@@ -150,21 +157,53 @@ function checkTie() {
     return true;
 }
 
-function restart() {
-    playText.innerText = "Let's Play!";
-    createBoard();
-    switchPlayer();
-    boxes.forEach(box => {
-        box.innerText = "";
-    })
-    nextMoveButtons.forEach(button => {
-        button.addEventListener("click", columnChosen);
-    })
+function aiMove() {
+    let depth;
+    switch (difficulty) {
+        case "beginner": 
+            depth = 1; 
+            break;
+        case "easy":
+            depth = 2;
+            break;
+        case "medium":
+            depth = 4;
+            break;
+        case "hard":
+            depth = 5;
+            break;
+        default:
+            depth = 2;
+    }
+    let result = alphabeta(depth, -Infinity, Infinity, true);
+    setTimeout(() => {
+        makeMove(result[0], result[1])
+    }, 500);
 }
 
-function aiMove() {
-    let result = alphabeta(6, -Infinity, Infinity, true);
-    makeMove(result[0], result[1]);
+function newGame() {
+    opponent = document.querySelector("input[name = player-type]:checked").value;
+    if (opponent == "computer") {
+        difficulty = document.querySelector("input[name = difficulty]:checked").value;
+    } else if (opponent !== "human") {
+        return;
+    }
+    toggleNextMoveButtons(true);
+    boxes.forEach(box => {
+        box.innerText = "";
+    });
+    createBoard();
+    restartButton.innerText = "Restart";
+    currentPlayer = YELLOW; // technically RED starts first, but have to set YELLOW first so that switchPlayer will switch to RED correctly;
+    switchPlayer();
+}
+
+function toggleDifficultyOptions(e) {
+    if (e.target.value === "human") {
+        document.getElementById("difficulty-container").style.display="none";
+    } else if (e.target.value === "computer") {
+        document.getElementById("difficulty-container").style.display="block";
+    }
 }
 
 // temp function
@@ -176,9 +215,17 @@ function logBoard(depth, isMaximizing) {
     console.log(log);
 }
 
-restartButton.addEventListener('click', restart);
-nextMoveButtons.forEach(button => {
-    button.classList.add("red-move");
-})
+function onStart() {
+    restartButton.addEventListener('click', newGame);
+    opponentOptions.forEach(option => {
+        option.onclick = toggleDifficultyOptions;
+    })
+}
 
-restart();
+onStart();
+
+// reset radio buttons to default checked on reload
+window.onload = () => {
+    document.getElementById("human").checked = true;
+    document.getElementById("easy").checked = true;
+}

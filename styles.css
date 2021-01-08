@@ -89,14 +89,14 @@ button:hover {
     transition: 0.5s;
 }
 
-#settings-container {
+.side-container {
     display: flex;
     flex-direction: column;
     border: 3px solid black;
     margin-left: 36px;
     padding: 16px;
     background-color: rgb(206, 178, 143);
-    width: 240px;
+    width: 200px;
 }
 
 span {
@@ -111,4 +111,18 @@ span {
 
 #difficulty-container {
     display: none;
+}
+
+#scoreboard {
+    display: flex;
+    flex-wrap: wrap;
+    width: 190px;
+}
+
+.player-name {
+    width: 95px;
+}
+
+.player-score {
+    width: 95px;
 }

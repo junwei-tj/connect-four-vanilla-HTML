@@ -16,12 +16,15 @@ function calculateScore(player) {
     let score = 0;
 
     // points for center (3 pts each)
-    let centerIndex = Math.floor(COLUMNS/2);
-    let centerColumn = [];
-    for (let row=0; row<ROWS; row++) {
-        centerColumn.push(board[row][centerIndex]);
+    // no center advantage at beginner difficulty;
+    if (difficulty !== "beginner") {
+        let centerIndex = Math.floor(COLUMNS/2);
+        let centerColumn = [];
+        for (let row=0; row<ROWS; row++) {
+            centerColumn.push(board[row][centerIndex]);
+        }
+        score += centerColumn.count(player) * 3;
     }
-    score += centerColumn.count(player) * 3;
 
     // points for horizontal
     for (let row=0; row<ROWS; row++) {

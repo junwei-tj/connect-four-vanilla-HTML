@@ -5,14 +5,23 @@ const boxes = Array.from(document.getElementsByClassName("box")); // boxes refer
 let board; // board is a 2D array hidden from the HTML, that parallels the HTML boxes. it is used to handle game logic
 const nextMoveButtons = Array.from(document.getElementsByClassName("next-move"));
 const playText = document.getElementById("play-text");
+const newGameButton = document.getElementById("new-game-button");
 const restartButton = document.getElementById("restart-button");
 const opponentOptions = Array.from(document.getElementsByName("player-type"));
+
+const playerOne = document.getElementById("player-one");
+const playerTwo = document.getElementById("player-two");
+const playerOneScoreText = document.getElementById("player-one-score");
+const playerTwoScoreText = document.getElementById("player-two-score");
 
 const RED = "red";
 const YELLOW = "yellow";
 let currentPlayer;
+let startingPlayer;
 let opponent;
 let difficulty;
+let playerOneScore;
+let playerTwoScore;
 
 // initializes board to a 2D array of 6 rows by 7 columns
 function createBoard() {
@@ -38,7 +47,9 @@ function columnChosen(e) {
 }
 
 // "drops" the player's token into the board
+// checks if game has ended as well and updates score accordingly
 // when the game ends all next move buttons are devoid of their event listeners
+// if game has ended, change who starts the next round
 function makeMove(row, column) {
     board[row][column] = currentPlayer;
     lastMove = { row, column };
@@ -53,9 +64,19 @@ function makeMove(row, column) {
 
     let winner = getWinner();
     if (winner) {
-        playText.innerText = winner === 'tie' ? "Tie" : `${winner} has won!`;
+        if (winner === "tie") {
+            playText.innerText = "Tie Game";
+        } else {
+            playText.innerText = `${winner} has won!`;
+            if (winner === RED) {
+                playerOneScoreText.innerText = `${++playerOneScore}`;
+            } else {
+                playerTwoScoreText.innerText = `${++playerTwoScore}`;
+            }
+        }        
         toggleNextMoveButtons();
-        restartButton.innerText = "New Game";
+        startingPlayer = startingPlayer === RED ? YELLOW : RED;
+        newGameButton.innerText = "New Game";
     } else {
         switchPlayer();
     }
@@ -185,16 +206,28 @@ function newGame() {
     opponent = document.querySelector("input[name = player-type]:checked").value;
     if (opponent == "computer") {
         difficulty = document.querySelector("input[name = difficulty]:checked").value;
+        playerOne.innerText = "You";
+        playerTwo.innerText = `Computer (${difficulty[0].toUpperCase() + difficulty.slice(1)})`; // difficulty is title-cased
     } else if (opponent !== "human") {
         return;
     }
+    startingPlayer = RED;
+    restart();
+    playerOneScore = 0;
+    playerTwoScore = 0;
+    playerOneScoreText.innerText = playerOneScore;
+    playerTwoScoreText.innerText = playerTwoScore;
+}
+
+// restarts game with the same opponent and without resetting score
+// calls switchPlayer() to alternate between who starts first
+function restart() {
     toggleNextMoveButtons(true);
     boxes.forEach(box => {
         box.innerText = "";
     });
     createBoard();
-    restartButton.innerText = "Restart";
-    currentPlayer = YELLOW; // technically RED starts first, but have to set YELLOW first so that switchPlayer will switch to RED correctly;
+    currentPlayer = startingPlayer === RED ? YELLOW : RED; // we need to set the currentPlayer to the opposite of currentPlayer for switchPlayer to switch correctly
     switchPlayer();
 }
 
@@ -216,7 +249,8 @@ function logBoard(depth, isMaximizing) {
 }
 
 function onStart() {
-    restartButton.addEventListener('click', newGame);
+    newGameButton.addEventListener('click', newGame);
+    restartButton.addEventListener('click', restart);
     opponentOptions.forEach(option => {
         option.onclick = toggleDifficultyOptions;
     })

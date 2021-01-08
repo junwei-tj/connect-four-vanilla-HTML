@@ -63,28 +63,40 @@
             <div class="box" id="41"></div>
         </div>
     </div>
-    <div id="settings-container">
-        <span><b>Opponent</b></span>
-        <div class="settings-options">
-            <input type="radio" id="human" name="player-type" value="human" checked>
-            <label for="human">Human</label><br>
-            <input type="radio" id="computer" name="player-type" value="computer">
-            <label for="computer">Computer</label>
-        </div>
-        <div id="difficulty-container">
-            <span><b>Difficulty Level</b></span>
+    <div id="side-panel">
+        <div class="side-container">
+            <span><b>Opponent</b></span>
             <div class="settings-options">
-                <input type="radio" id="beginner" name="difficulty" value="beginner">
-                <label for="beginner">Beginner</label><br>
-                <input type="radio" id="easy" name="difficulty" value="easy" checked>
-                <label for="easy">Easy</label><br>
-                <input type="radio" id="medium" name="difficulty" value="medium">
-                <label for="medium">Medium</label><br>
-                <input type="radio" id="hard" name="difficulty" value="hard">
-                <label for="hard">Hard</label>
+                <input type="radio" id="human" name="player-type" value="human" checked>
+                <label for="human">Human</label><br>
+                <input type="radio" id="computer" name="player-type" value="computer">
+                <label for="computer">Computer</label>
             </div>
+            <div id="difficulty-container">
+                <span><b>Difficulty Level</b></span>
+                <div class="settings-options">
+                    <input type="radio" id="beginner" name="difficulty" value="beginner">
+                    <label for="beginner">Beginner</label><br>
+                    <input type="radio" id="easy" name="difficulty" value="easy" checked>
+                    <label for="easy">Easy</label><br>
+                    <input type="radio" id="medium" name="difficulty" value="medium">
+                    <label for="medium">Medium</label><br>
+                    <input type="radio" id="hard" name="difficulty" value="hard">
+                    <label for="hard">Hard</label>
+                </div>
+            </div>
+            <button id="new-game-button">New Game</button>
         </div>
-        <button id="restart-button">New Game</button>
+        <div class="side-container" style="margin-top: 24px">
+            <span><b>Score</b></span>
+            <div id="scoreboard">
+                <span class="player-name" id="player-one">Red</span>
+                <span class="player-score" id="player-one-score">0</span>
+                <span class="player-name" id="player-two">Yellow</span>
+                <span class="player-score" id="player-two-score">0</span>
+            </div>
+            <button id="restart-button">Restart</button>
+        </div>
     </div>
     <script src="ai.js"></script>
     <script src="script.js"></script>

@@ -1,8 +1,11 @@
+// constant values
 const ROWS = 6;
 const COLUMNS = 7;
+const RED = "red";
+const YELLOW = "yellow";
 
+// HTML elements
 const boxes = Array.from(document.getElementsByClassName("box")); // boxes refer to the actual cells in the HTML
-let board; // board is a 2D array hidden from the HTML, that parallels the HTML boxes. it is used to handle game logic
 const nextMoveButtons = Array.from(document.getElementsByClassName("next-move"));
 const playText = document.getElementById("play-text");
 const newGameButton = document.getElementById("new-game-button");
@@ -14,8 +17,8 @@ const playerTwo = document.getElementById("player-two");
 const playerOneScoreText = document.getElementById("player-one-score");
 const playerTwoScoreText = document.getElementById("player-two-score");
 
-const RED = "red";
-const YELLOW = "yellow";
+// global variables
+let board; // board is a 2D array hidden from the HTML, that parallels the HTML boxes. it is used to handle game logic
 let currentPlayer;
 let startingPlayer;
 let opponent;
@@ -74,7 +77,7 @@ function makeMove(row, column) {
                 playerTwoScoreText.innerText = `${++playerTwoScore}`;
             }
         }        
-        toggleNextMoveButtons();
+        toggleNextMoveButtons(false);
         startingPlayer = startingPlayer === RED ? YELLOW : RED;
         newGameButton.innerText = "New Game";
     } else {
@@ -82,6 +85,7 @@ function makeMove(row, column) {
     }
 }
 
+// switches currentPlayer and updates relevant information
 function switchPlayer() {
     currentPlayer = currentPlayer === RED ? YELLOW : RED;
     if (opponent === "human") {
@@ -113,6 +117,8 @@ function switchPlayer() {
     }
 }
 
+// used in makeMove when game ends (disables)
+// used in restart (enables)
 function toggleNextMoveButtons(turnOn) {
     if (turnOn) {
         nextMoveButtons.forEach(button => {
@@ -167,6 +173,7 @@ function getWinner() {
     return null;
 }
 
+// returns true if all boxes are not null
 function checkTie() {
     for (let i=0; i<ROWS; i++) {
         for (let j=0; j<COLUMNS; j++) {
@@ -178,6 +185,9 @@ function checkTie() {
     return true;
 }
 
+// function to let AI choose its next move
+// uses alpha-beta-pruning version of minimax to decide next move
+// a larger depth value will make AI harder but consequently takes longer to evaluate a move (may hang browser)
 function aiMove() {
     let depth;
     switch (difficulty) {
@@ -199,9 +209,11 @@ function aiMove() {
     let result = alphabeta(depth, -Infinity, Infinity, true);
     setTimeout(() => {
         makeMove(result[0], result[1])
-    }, 500);
+    }, 500); // simulates AI "thinking" so that each move is not instantaneous
 }
 
+// starts a new game with the desired opponent and difficulty level (if applicable)
+// resets scores to 0
 function newGame() {
     opponent = document.querySelector("input[name = player-type]:checked").value;
     if (opponent == "computer") {
@@ -231,6 +243,7 @@ function restart() {
     switchPlayer();
 }
 
+// function to display the different difficulty levels only if computer is chosen as the opponent
 function toggleDifficultyOptions(e) {
     if (e.target.value === "human") {
         document.getElementById("difficulty-container").style.display="none";
@@ -248,7 +261,8 @@ function logBoard(depth, isMaximizing) {
     console.log(log);
 }
 
-function onStart() {
+// function to consolidate all the required addition of event listeners / onclicks
+function addRequiredEventListeners() {
     newGameButton.addEventListener('click', newGame);
     restartButton.addEventListener('click', restart);
     opponentOptions.forEach(option => {
@@ -256,10 +270,10 @@ function onStart() {
     })
 }
 
-onStart();
-
 // reset radio buttons to default checked on reload
 window.onload = () => {
     document.getElementById("human").checked = true;
     document.getElementById("easy").checked = true;
 }
+
+addRequiredEventListeners();

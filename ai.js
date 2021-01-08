@@ -1,3 +1,6 @@
+// returns all the current valid spaces (moves) in the form of an array of { row, col }
+// should return at most 7 elements in the array
+// mainly for performance issues so the program doesnt look through all empty spaces
 function getValidSpaces() {
     let validSpaces = [];
     for (let col=0; col<COLUMNS; col++) {
@@ -11,6 +14,8 @@ function getValidSpaces() {
     return validSpaces;
 }
 
+// function to assign a score to each player's performance with regards to the current board state
+// makes use of evaluateWindow
 function calculateScore(player) {
     let WINDOW_SIZE = 4;
     let score = 0;
@@ -64,6 +69,7 @@ function calculateScore(player) {
 // TODO: refine AI to identify with a window where AI has 3 pieces, how close are they to filling the last empty slot
 // Reasoning: AI can potentially have 2 "3-piece window" that requires more moves to complete it, while the player has only one
 // "3-piece" window but can win in the next turn. AI will prioritise getting the 2 windows as opposed to stopping the player from winning
+// function to assign points for each 4-piece window
 function evaluateWindow(window, player) {
     let opponent = player === RED ? YELLOW : RED;
     let playerPieces = window.count(player);
@@ -78,7 +84,7 @@ function evaluateWindow(window, player) {
     return 0;
 }
 
-// helper function for array
+// helper function for array, to be used in evaluateWindow
 Array.prototype.count = function(toFind) {
     let count = 0;
     for (element of this) {
@@ -87,6 +93,7 @@ Array.prototype.count = function(toFind) {
     return count;
 }
 
+// minimax algorithm with alpha-beta pruning
 function alphabeta(depth, alpha, beta, isMaximizing) {
     // terminal conditions
     if (depth != 0) {
